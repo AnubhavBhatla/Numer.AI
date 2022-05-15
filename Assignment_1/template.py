@@ -62,13 +62,33 @@ def returnNext(state, action):
 
 # Train your Markov Decision Process, make use of the returnNext function to model and act on the priceChanges dependence on the states and actions
 def Train():
-    pass
+    results = [[0]*10]*10
+    for j in range(0,10):
+    	for k in range(0,10):
+            state = (j,k)
+            (pricc1, temp1) = returnNext(state, -1)
+            (pricc2, temp2) = returnNext(state, 0)
+            (pricc3, temp3) = returnNext(state, 1)
+            maxc = max(pricc1, pricc2, pricc3)
+
+            if maxc==pricc1:
+	            results[j][k] = -1
+            elif maxc==pricc3:
+	            results[j][k] = 1
+            else:
+	            results[j][k] = 0
+
+    return results
+    
 
 # This you need to write after training your MDP, this should just take in the state and return the Action you would perform
 # Please do not make use of the returnNext function inside here, that would defeat the purpose of training the model, as it would be known to you!
 
-def Run(state):
-    pass
+def Run(state, results):
+    (j,k) = state
+    act = results[j][k]
+    return act
+    
 
 # This is the main function, you don't need to tamper with it!
 def mainRun(iter = 1000):
@@ -81,7 +101,7 @@ def mainRun(iter = 1000):
     networth = 0
     st = initstate
     while i < iter:
-        act = Run(st)
+        act = Run(st, results)
         pricCh, ns = returnNext(st,act)
         price += pricCh
         if act==1:
@@ -121,10 +141,8 @@ with open(fte,'rb') as f:
 
 with open('correlations.npy','rb') as f:
     corr = np.load(f)
-    
-print(corr)
 
 ifTest  = False
-#Train()
+results = Train()
 ifTest = True
-#mainRun()
+mainRun()
